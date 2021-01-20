@@ -15,7 +15,7 @@ class App extends Component {
   };
 
   makeApiCall = searchInput => {
-    var searchUrl = `https://www.themealdb.com/api/json/v1/1/search.php?s=${searchInput}`;
+    var searchUrl = `https://api.unsplash.com/search/photos?query=${searchInput}`;
     fetch(searchUrl)
       .then(response => {
         return response.json();
@@ -41,26 +41,28 @@ class App extends Component {
             class="px-8 rounded-r-lg bg-green-400  text-gray-800 font-bold p-4 uppercase border-green-500 border-t border-b border-r"
             onClick={this.handleSearch}
             type="button"
-            >Search</button>
+            >Go</button>
         </div>
           <hr/>
         {this.state.meals ? (
           <div class="flex flex-wrap mt-2 mx-2">
             {this.state.meals.map((meal, index) => (
               <div class="w-full md:w-1/2 lg:w-1/3 px-2 my-2"  key={index}>
-                  <div class="shadow-md bg-white">
+                <a href="">
+                  <div class="shadow-md bg-white transform hover:bg-green-400 transition duration-500 hover:scale-105">
                       <img class="h-48 w-full object-cover" src={meal.strMealThumb} alt="image"/>
+                      
                       <div class="flex flex-col p-4">
                           <p class="text-lg">{meal.strMeal}</p>
                           <p class="text-gray-600">Your description here...</p>
-                          <button class="self-end mt-4">Show more...</button>
                       </div>
                   </div>
+                </a>
               </div>
             ))}
           </div>
         ) : (
-          <p>Try searching more..</p>
+          <p class="m-8 text-gray-800">We couldn't find any matches for "{this.state.searchValue}". Try another search...</p>
         )}
       </div>
     );
