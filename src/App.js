@@ -1,9 +1,11 @@
 import React, { Component } from "react";
+import axios from "axios";
+import ImageList from './components/imageList';
 
 class App extends Component {
   state = {
     searchValue: "",
-    meals: []
+    images: []
   };
 
   handleOnChange = event => {
@@ -14,15 +16,36 @@ class App extends Component {
     this.makeApiCall(this.state.searchValue);
   };
 
-  makeApiCall = searchInput => {
-    var searchUrl = `https://api.unsplash.com/search/photos?query=${searchInput}`;
+  makeApiCall = async (searchInput) => {
+
+    await axios.get('https://api.unsplash.com/search/photos', {
+      params: { query: searchInput},
+      headers: {
+          Authorization: 'Client-ID b79d009ec0a36fceefd796ecf2c8f7981dba4259264bcf5db2cadc07100b697d'
+      }
+    })
+    .then(response => {
+      this.setState({ images: response.data.results })
+    })
+    .catch(err => {
+        if (err.response) {
+          console.log('client received an error response (5xx, 4xx)');
+        } else if (err.request) {
+          console.log('client never received a response, or request never left');
+        } else {
+          console.log('anything else');
+        }
+    })
+    //console.log(response);
+
+    /*var searchUrl = `https://api.unsplash.com/search/photos?query=${searchInput}`;
     fetch(searchUrl)
       .then(response => {
         return response.json();
       })
       .then(jsonData => {
-        this.setState({ meals: jsonData.meals });
-      });
+        
+      });*/
   };
 
   render() {
@@ -43,27 +66,8 @@ class App extends Component {
             type="button"
             >Go</button>
         </div>
-          <hr/>
-        {this.state.meals ? (
-          <div class="flex flex-wrap mt-2 mx-2">
-            {this.state.meals.map((meal, index) => (
-              <div class="w-full md:w-1/2 lg:w-1/3 px-2 my-2"  key={index}>
-                <a href="">
-                  <div class="shadow-md bg-white transform hover:bg-green-400 transition duration-500 hover:scale-105">
-                      <img class="h-48 w-full object-cover" src={meal.strMealThumb} alt="image"/>
-                      
-                      <div class="flex flex-col p-4">
-                          <p class="text-lg">{meal.strMeal}</p>
-                          <p class="text-gray-600">Your description here...</p>
-                      </div>
-                  </div>
-                </a>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p class="m-8 text-gray-800">We couldn't find any matches for "{this.state.searchValue}". Try another search...</p>
-        )}
+        <hr/>
+        <ImageList foundImages={this.state.images} />
       </div>
     );
   }
